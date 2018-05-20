@@ -4,6 +4,7 @@ import 'babel-polyfill'
 import Vue from 'vue'
 import App from './App.vue'
 import router from './router' /* 这个是export出来的router的实例 */
+import store from './store'
 import VueLazyLoad from 'vue-lazyload'
 import 'common/stylus/index.styl'
 import 'fastclick'
@@ -18,5 +19,6 @@ Vue.use(VueLazyLoad,{
 new Vue({
   el: '#app',
   render: h => h(App),
-  router
+  router,
+  store
 })

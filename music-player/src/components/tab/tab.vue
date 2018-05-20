@@ -1,10 +1,10 @@
 <template>
 <div class="tab">
   <!-- tag是一个属性 让我们可以设置router-link渲染成一个什么标签 -->
-  <router-link tag="div" class="tab-item" to="recommend">recommend</router-link>
+  <router-link tag="div" class="tab-item" to="/recommend">recommend</router-link>
   <router-link tag="div" class="tab-item" to="/rank">rank</router-link>
   <router-link tag="div" class="tab-item" to="/singer">singer</router-link>
-  <router-link tag="div" class="tab-item" to="search">search</router-link>
+  <router-link tag="div" class="tab-item" to="/search">search</router-link>
 </div>
 </template>
 

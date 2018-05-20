@@ -12,7 +12,11 @@
         <h2 class="list-group-title">{{group.title}}</h2>
         <ul>
           <!-- 具体的歌手类型 -->
-          <li v-for="item in group.item" class="list-group-item">
+          <li
+            v-for="item in group.item"
+            class="list-group-item"
+            @click="selectItem(item)"
+            >
             <!-- 左边是头像 -->
             <img class="avatar" v-lazy="item.avatar"/>
             <span class="name">{{item.name}}</span>
@@ -78,6 +82,12 @@
       }
     },
     methods: {
+      selectItem(item) {
+        /* item是一个对象，像父组件发送一个自定义事件 */
+        console.log(item)
+        this.$emit('switchRouter',item)
+
+      },
       onShortcutTouchStart(el) {
         /* target返回dom节点,这个currentIndex其实是个字符串类型 */
         let currentIndex = getData(el.target, 'index')
@@ -119,7 +129,6 @@
           height += list[i].offsetHeight
           this.heightList.push(height)
         }
-        console.log(this.heightList)
       },
       /* This其实是一个vue实例,也就是一个对象,在此基础上加的scrollY的都是对象的一个属性 */
       scroll(pos) {
@@ -137,7 +146,6 @@
       /* 检测到scrollY变化的时候,参数是新值,变化之后的值 */
       /* 往上拉是负的 */
       scrollY(newY) {
-        console.log(newY)
         const heightList = this.heightList
         if (newY > 0) {
           this.currentIndex = 0
@@ -149,8 +157,6 @@
             /* 如果height2没了,或者已经找到了,则index等于i */
             /* 要是这两个条件都不满足,说明index为0 */
             if (!height2 || (-newY >= height1 && -newY <height2)) {
-              console.log(-newY)
-              console.log(i)
               this.currentIndex = i
               return
             }
