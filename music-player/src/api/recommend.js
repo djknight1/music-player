@@ -13,16 +13,27 @@ export function getRecommend () {
 }
 
 export function getPlayList(type) {
-  const url = 'https://api.imjad.cn/cloudmusic/'
-  const id = 309390784
-  let playlist = []
-  if (!type) {
-    return
-  } else {
-    return axios.get(`${url}?type=${type}&id=${id}`
-    ).then( (res) => {
-      return Promise.resolve(res.data)
-    })
-}
+ /* axios.get(`https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_cp.fcg?g_tk=5381&uin=0&format=json&inCharset=utf-8&outCharset=utf-8¬ice=0&platform=h5&needNewCode=1&tpl=3&page=detail&type=top&topid=27&_=1519963122923`)
+    .then((res) =>{
+      console.log(res)
+    })*/
+
+  const url = 'https://c.y.qq.com/v8/fcg-bin/fcg_v8_toplist_cp.fcg'
+  const data = Object.assign({}, commonParams, {
+    g_tk:5381,
+    format:'json',
+    inCharset:'utf-8',
+    outCharset:'utf-8¬ice=0',
+    tpl:3,
+    page:'detail',
+    type:'top',
+    topid:27,
+    _:1519963122923,
+    platform: 'h5',
+    uin: 0,
+    needNewCode: 1
+  })
+  return jsonp(url, data, options)
+
 
 }

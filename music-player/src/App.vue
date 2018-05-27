@@ -9,6 +9,7 @@
     <keep-alive>
       <router-view></router-view>
     </keep-alive>
+    <player></player>
   </div>
 </template>
 
@@ -16,11 +17,14 @@
 /* 横杠两边转化的时候要大写 fkES6 */
 import MHeader from 'components/m-header/m-header.vue'
 import Tab from 'components/tab/tab.vue'
+import Player from 'components/player/player'
 /* import的东西都是要大写的 但是标签是小写的 */
 export default {
   components: {
     MHeader,
-    Tab
+    Tab,
+    /* player组件不属于任何一个路由承载的 */
+    Player
   }
 }
 </script>

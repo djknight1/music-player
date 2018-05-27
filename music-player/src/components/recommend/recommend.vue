@@ -21,11 +21,11 @@
               <div class="icon">
                 <!-- 想用vue-lazy插件,把:src换成v-lazy就行 同时再main.js里使用Vue.use -->
 
-                <img width="60" height="60" v-lazy="item.al.picUrl"/>
+                <img width="60" height="60" v-lazy="normalizePicUrl(item.data.albummid)"/>
               </div>
               <div class="text">
-                <h2 class="name">{{item.name}}</h2>
-                <p class="desc">xxx</p>
+                <h2 class="name">{{item.data.albumname}}</h2>
+                <p class="desc">{{item.data.singer[0].name}}</p>
               </div>
             </li>
           </ul>
@@ -93,10 +93,13 @@
       getPlayList_data() {
         /* this.discList = getPlayList('playlist').data.playlist.trackIds*/
         getPlayList('playlist').then((res) => {
-          this.discList = res.playlist.tracks
-          console.log(this.discList)
+          console.log(res)
+          this.discList = res.songlist
         })
 
+      },
+      normalizePicUrl(albumnid) {
+        return `https://y.gtimg.cn/music/photo_new/T002R90x90M000${albumnid}.jpg?max_age=2592000`
       },
       loadImage () {
         /* 但是你总不能每一张图片加载的时候都调用loadimage方法吧 这是一种浪费 */

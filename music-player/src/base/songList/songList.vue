@@ -1,7 +1,11 @@
 <template>
+  <!-- songList是基础组件 不写任何逻辑!!只派发事件!! -->
   <div class="song-list">
     <ul>
-      <li v-for="song in songs" class="item">
+      <li
+          v-for="(song,index) in songs"
+          class="item"
+          @click="selectItem(song, index)">
         <div class="content">
           <h2 class="name">{{song.name}}</h2>
           <p class="desc">{{getDesc(song)}}</p>
@@ -22,6 +26,9 @@
     methods: {
       getDesc(song) {
         return `${song.singer},${song.album}`
+      },
+      selectItem(song, index) {
+        this.$emit('select', song, index)
       }
     }
   }
@@ -57,8 +64,8 @@
           font-size: $font-size-large
       .content
         display: flex
-        flex-direction:column
-        flex:1
+        flex-direction: column
+        flex: 1
         line-height: 20px
         overflow: hidden
         .name
