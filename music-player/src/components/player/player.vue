@@ -21,25 +21,35 @@
         <div class="middle">
           <div class="middle-l">
             <div class="cd-wrapper" ref="wrapper">
-              <div class="cd">
+              <div class="cd" :class="{'play' : playing ,'play pause' : !playing }">
                 <img class="image" :src="currentSong.image">
               </div>
             </div>
           </div>
         </div>
         <div class="bottom">
+          <div class="progress-wrapper">
+            <span class="time time-l" v-model="currentTime">{{currentTime}}</span>
+            <div class="progress-bar-wrapper">
+              <progress-bar :percent="percent">
+
+              </progress-bar>
+            </div>
+            <span class="time time-r">{{totalTime}}</span>
+          </div>
+
           <div class="operators">
             <div class="icon i-left">
               <i class="icon-sequence"></i>
             </div>
             <div class="icon i-left">
-              <i class="icon-prev"></i>
+              <i @click="prev" class="icon-prev" :class="{'disable' : !songReady}"></i>
             </div>
-            <div @click="togglePlay" class="icon i-center">
-              <i  class="icon-play"></i>
+            <div @click="togglePlay" class="icon i-center" :class="{'disable' : !songReady}" >
+              <i  :class="isPlaying" ></i>
             </div>
-            <div class="icon i-right">
-              <i class="icon-next"></i>
+            <div class="icon i-right" :class="{'disable' : !songReady}">
+              <i @click="next" class="icon-next" ></i>
             </div>
             <div class="icon i-right">
               <i class="icon icon-not-favorite"></i>
@@ -48,23 +58,30 @@
         </div>
       </div>
     </transition>
-
+      <!-- TODO：在父组件接受事件 -->
     <transition name="mini" >
       <div class="mini-player" v-show="!fullScreen" @click="triggerFullScreen">
         <div class="icon">
-          <img width="40" height="40" :src="currentSong.image">
+          <img width="40" height="40" :src="currentSong.image" :class="{'play' : playing ,'play pause' : !playing }">
         </div>
         <div class="text">
           <h2 class="name">{{currentSong.name}}</h2>
           <p class="desc">{{currentSong.singer}}</p>
+        </div>
+        <div class="control" @click.stop="togglePlay" >
+          <i :class="isPlayingMini"></i>
         </div>
         <div class="control" >
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
-    <!-- 还要调用audio的play属性才能播放 -->
-    <audio ref="audio" :src="currentSong.url"></audio>
+    <!-- 还要调用audio的play属性才能播放,准备播放的时候会触发canplay事件,发生错误的时候就会触发error事件 -->
+    <audio ref="audio"
+           :src="currentSong.url"
+           @canplay="ready"
+           @error="error"
+           @timeupdate="timeLine"></audio>
   </div>
 </template>
 
@@ -73,19 +90,50 @@
   import {mapMutations} from 'vuex'
   import animations from 'create-keyframe-animation'
   import {prefixStyle} from 'common/js/dom'
+  import ProgressBar from 'base/progressBar/progressBar.vue'
 
   const transform = prefixStyle('transform')
 
   export default {
     data() {
-      return {}
+      return {
+        iconPlay:'',
+        miniIconPlay: '',
+        songReady: false,
+        currentTime: 0,
+        totalTime: 0,
+        originalTime : 0
+      }
     },
     computed: {
+      isPlaying() {
+        if (this.playing) {
+          this.iconPlay = 'icon-pause'
+        } else {
+          this.iconPlay = 'icon-play'
+        }
+        return this.iconPlay
+      },
+
+      isPlayingMini() {
+        if (this.playing) {
+          this.miniIconPlay = 'icon-pause-mini'
+        } else {
+          this.miniIconPlay = 'icon-play-mini'
+        }
+        return this.miniIconPlay
+      },
+
+      percent() {
+        return this.originalTime / this.currentSong.duration
+      },
+
       ...mapGetters([
         `fullScreen`,
         `playlist`,
         'currentSong',
-        `playing`
+        `playing`,
+        'currentIndex'
       ])
     },
     created() {
@@ -176,10 +224,79 @@
           this.$refs.audio.play()
         }
       },
+      next() {
+        /* 修改了currentIndex的值,currentSong就变化了,然后数据渲染到audio的src,然后再调用watch */
+        if(!this.songReady) {
+          return
+        }
 
+        if (this.currentIndex == 99) {
+          this.setCurrentIndex(0)
+        }else {
+          this.setCurrentIndex(this.currentIndex + 1)
+        }
+        if(!this.playing) {
+          this.$refs.audio.pause()
+        } else {
+          this.$refs.audio.play()
+        }
+        this.songReady = false
+        console.log(this.currentIndex)
+      },
+      prev() {
+        if(!this.songReady) {
+          return
+        }
+
+        if (this.currentIndex == 0) {
+          console.log(this.playlist.length)
+          this.setCurrentIndex(this.playlist.length - 1)
+          console.log(this.currentIndex)
+        } else {
+          this.setCurrentIndex(this.currentIndex - 1)
+        }
+
+        if(!this.playing) {
+          this.$refs.audio.pause()
+        } else {
+          this.$refs.audio.play()
+        }
+        this.songReady = false
+
+      },
+      /* ready做标识位功能,当你error时,要让之后的歌都能播放,所以在出错的时候也要将它变成true */
+      ready() {
+        this.songReady = true
+      },
+      error() {
+        this.songReady = true
+      },
+      timeLine(e) {
+        /* 现在的audio里面的currentTime是秒数 */
+        this.originalTime = e.target.currentTime
+        this.totalTime = this.formatTime(e.target.duration)
+        this.currentTime = this.formatTime(e.target.currentTime)
+      },
+      formatTime(timestamp){
+
+        timestamp = timestamp | 0
+        const minute = timestamp / 60 | 0
+        const second = this._pad(timestamp % 60)
+        return `${minute}:${second}`
+
+      },
+      _pad(num, n = 2) {
+        let len = num.toString().length
+        while (len < n) {
+          num = '0' + num
+          len++
+        }
+        return num
+      },
       ...mapMutations({
         setFullScreen: 'SET_FULL_SCREEN',
-        setPlaying: 'SET_PLAYING'
+        setPlaying: 'SET_PLAYING',
+        setCurrentIndex: 'SET_CURRENT_INDEX'
       })
     },
     /* 当currentSong变化的时候你就开始播放了 */
@@ -192,7 +309,9 @@
       }
     },
 
-    components: {}
+    components: {
+      ProgressBar
+    }
   }
 </script>
 
@@ -432,4 +551,17 @@
           left: 0
           top: 0
 
+  @keyframes rotate
+    0%
+      -webkit-transform: rotate (0deg)
+      -moz-transform: rotate (0deg)
+      -ms-transform: rotate (0deg)
+      -o-transform: rotate (0deg)
+      transform: rotate (0deg)
+    100%
+      -webkit-transform: rotate(360deg)
+      -moz-transform: rotate(360deg)
+      -ms-transform: rotate(360deg)
+      -o-transform: rotate(360deg)
+      transform: rotate(360deg)
 </style>

@@ -38,6 +38,11 @@
     mounted () {
 
     },
+    watch: {
+      singer() {
+        this.getDetail()
+      }
+    },
     methods: {
       getDetail() {
         if(!this.singer.id){

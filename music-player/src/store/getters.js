@@ -1,4 +1,5 @@
 /* getters文件用来从state里面取数据 */
+/* getters也有计算属性的感觉 */
 export const singer = state => state.singer
 /* 箭头函数的简写,等于function (state){ return state.singer} */
 export const playing = state => state.playing
