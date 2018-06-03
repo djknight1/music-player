@@ -32,7 +32,6 @@
       ])
     },
     created () {
-      console.log(this.singer)
       this.getDetail()
     },
     mounted () {
@@ -51,7 +50,6 @@
         getSingerDetail(this.singer.id).then((res) => {
           if (res.code === ERR_OK) {
             this.song = this.normalizeSongs(res.data.list)
-            console.log(this.song)
           }
         })
       },

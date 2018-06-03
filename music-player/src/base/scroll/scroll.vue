@@ -84,7 +84,14 @@ export default {
         this.scroll.disable()
       }
     },
-    scrollTo (el,time) {
+
+    scrollTo(offsetX, offsetY, time) {
+      if (this.scroll){
+        this.scroll.scrollTo(offsetX,offsetY, time)
+      }
+    },
+
+    scrollToElement (el,time) {
       if (this.scroll){
         this.scroll.scrollToElement(el,time)
       }

@@ -6,7 +6,7 @@
     <h1 class="title" ref="title">{{title}}</h1>
     <div class="bg-image" :style="bgStyle" ref="bgImage">
       <div class="play-wrapper">
-        <div class="play" v-if="songs.length" ref="playButton">
+        <div class="play" v-if="songs.length" ref="playButton" @click="randomPlayAll">
           <i class="icon-play"></i>
           <span class="text">随机播放全部</span>
         </div>
@@ -139,16 +139,24 @@
       },
       selectItem(item, index) {
         /* 如果没有封装selectPlay就要使用this.$store.dispatch('selectPlay') */
+        console.log(this.songs)
         this.selectPlay({
           list: this.songs,
           index: index
         })
       },
+
+      randomPlayAll() {
+        this.randomPlayALL(this.songs)
+        console.log(this.songs)
+      },
+
       getBack() {
         this.$router.push('/singer')
       },
       ...mapActions([
-        `selectPlay`
+        `selectPlay`,
+        'randomPlayALL'
       ])
     },
     components: {

@@ -16,7 +16,7 @@
             v-for="item in group.item"
             class="list-group-item"
             @click="selectItem(item)"
-            >
+          >
             <!-- 左边是头像 -->
             <img class="avatar" v-lazy="item.avatar"/>
             <span class="name">{{item.name}}</span>
@@ -85,7 +85,7 @@
       selectItem(item) {
         /* item是一个对象，像父组件发送一个自定义事件 */
         console.log(item)
-        this.$emit('switchRouter',item)
+        this.$emit('switchRouter', item)
 
       },
       onShortcutTouchStart(el) {
@@ -94,7 +94,7 @@
         let firstTouch = el.touches[0]
         this.touch.y1 = firstTouch.pageY
         this.touch.currentIndex = currentIndex
-        this.$refs.listview.scrollTo(this.$refs.listGroup[currentIndex], 1000)
+        this.$refs.listview.scrollToElement(this.$refs.listGroup[currentIndex], 1000)
         this.scrollY = -this.heightList[currentIndex]
       },
       /* 原理如下: */
@@ -117,7 +117,7 @@
         /* offet还要加上第一次点击的时候的index,因为offset是偏移量 */
         /* currentIndex是个字符串类型,我们要把他变成int */
         offset = parseInt(this.touch.currentIndex) + offset
-        this.$refs.listview.scrollTo(this.$refs.listGroup[offset], 1000)
+        this.$refs.listview.scrollToElement(this.$refs.listGroup[offset], 1000)
       },
       /* 为下面计算你目前滚动到了哪里做准备 */
       getGroupHeight() {
@@ -156,7 +156,7 @@
             let height2 = heightList[i + 1]
             /* 如果height2没了,或者已经找到了,则index等于i */
             /* 要是这两个条件都不满足,说明index为0 */
-            if (!height2 || (-newY >= height1 && -newY <height2)) {
+            if (!height2 || (-newY >= height1 && -newY < height2)) {
               this.currentIndex = i
               return
             }

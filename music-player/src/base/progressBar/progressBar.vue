@@ -1,5 +1,5 @@
 <template>
-  <div class="progress-bar" ref="progressBar">
+  <div class="progress-bar" ref="progressBar" @click="progressClick">
     <div class="bar-inner">
       <div class="progress" ref="progress"></div><!-- 走过的位置 -->
       <div class="progress-bar-wrapper" ref="progressBtn"
@@ -32,6 +32,11 @@
       this.touch = {}
     },
     methods: {
+      progressClick(e) {
+        this._offset(e.offsetX)
+        const newP = this._getScrolledPercent()
+        this.$emit('scrollProgress', newP)
+      },
 
       progressTouchStart(e) {
         this.touch.isTouch = true
@@ -48,32 +53,37 @@
         const delta = e.touches[0].pageX - this.touch.startX
         let offsetWidth
 
-        if(this.touch.left + delta < 0) {
+        if (this.touch.left + delta < 0) {
           offsetWidth = 0
-        } else if (this.touch.left + delta >this.$refs.progressBar.clientWidth - BallWidth ){
+        } else if (this.touch.left + delta > this.$refs.progressBar.clientWidth - BallWidth) {
           offsetWidth = this.$refs.progressBar.clientWidth - BallWidth
-          console.log(offsetWidth)
-        } else{
-          offsetWidth =this.touch.left + delta
-        }
-
+        } else
+          offsetWidth = this.touch.left + delta
         this._offset(offsetWidth)
+
+
       },
+
+      /* 将新的percent传送到父组件,父组件再传递回来 */
       progressTouchEnd(e) {
         this.touch.isTouch = false
         const newP = this._getScrolledPercent()
-        this.$emit('scrollSong',newP)
+        this.$emit('scrollProgress', newP)
       },
+
+      /* 设置进度条 */
       _offset(offsetWidth) {
         this.$refs.progress.style.width = `${offsetWidth}px`
         this.$refs.progressBtn.style[transform] = `translate3d(${offsetWidth}px,0,0)`
       },
-      /* 滚动之后的barwidth */
+
+      /* 滑动进度条之后新的barwidth */
       _getScrolledPercent() {
         const progressBarWidth = this.$refs.progressBar.clientWidth - BallWidth
         const newPercent = this.$refs.progress.clientWidth / progressBarWidth
         return newPercent
       }
+
     },
     watch: {
       percent(newPercent) {
