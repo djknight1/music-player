@@ -64,6 +64,7 @@
           /* 重新计算宽度 */
           /*你第一次计算出来的宽度是已经加过 两个空白页面的宽度,所以呀！不能再加了 加个判断位判断是否resize*/
           this._setSliderWidth(1)
+          this.slider.refresh()
         }
       });
     },
@@ -82,11 +83,8 @@
         /* 这个轮播的想法是设置一个slider只显示一张图片大小,而slidergroup是所有元素的总和大小 */
         let width = 0
         /*获取每一张图片的宽度*/
-
-
         let sliderWidth = this.$refs.slider.clientWidth
-
-
+        console.log(sliderWidth)
         /*让每一张图片都有一个classname 叫classItem*/
         /*让每一张图片都充满整个slider*/
 

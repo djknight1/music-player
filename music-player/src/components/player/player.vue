@@ -385,19 +385,14 @@
       },
 
       scrollProgress(percent) {
-
         const currentTime = this.currentSong.duration * percent
-
         this.$refs.audio.currentTime = currentTime
-
         if (!this.playing) {
           this.togglePlay()
         }
-
         if (this.currentLyric.lines) {
           this.currentLyric.seek(currentTime * 1000)
         }
-
       },
 
       mixPlaylist(mode) {
@@ -549,7 +544,9 @@
     watch: {
       currentSong(newSong, oldSong) {
         /* 要在dom ready的时候才能调用play */
-        this.$nextTick(() => {
+        /* 当你在微信里播放的时候,微信到后台了 js不执行,但是audio会把这首歌播放完,播放完之后就会触发end事件 */
+        /* 用setTimeout解决它 */
+        setTimeout(() => {
           if (newSong.id !== oldSong.id) {
 
             if (this.currentLyric.lines) {
@@ -560,7 +557,7 @@
             /*getLyric返回一个promise对象 */
             this.getLyric()
           }
-        })
+        },1000)
       },
       mode(newMODE) {
         const newList = this.mixPlaylist(newMODE)
